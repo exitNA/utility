@@ -6,17 +6,18 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <exception>
 
 namespace os
 {
-    inline std::list<std::string> list_dir(std::string const& dir)
+    inline std::vector<std::string> lsdir(std::string const& dir)
     {
         std::string temp_dir(dir + "/*");
 
         WIN32_FIND_DATAA ffd;
         HANDLE hFind = FindFirstFileA(temp_dir.c_str(), &ffd);
 
-        std::list<std::string> file_list;
+        std::vector<std::string> file_list;
         if (INVALID_HANDLE_VALUE == hFind)
         {
             return file_list;
@@ -98,18 +99,40 @@ namespace os
     }
 
 
-    inline void read_file(std::vector<char>& buf, const char* file_path_name,
+    inline bool read_file(std::vector<char>& buf, const char* file_path_name,
         std::ios::openmode mode = std::ios::binary)
     {
-        std::ifstream in(file_path_name, mode);
-        size_t srcSize = static_cast<size_t>(in.seekg(0, std::ios::end).tellg());
-        in.seekg(0);
+        try
+        {
+            std::ifstream in(file_path_name, mode);
+            std::streamoff src_size = in.seekg(0, std::ios::end).tellg();
+            if (src_size == -1)
+            {
+                buf.clear();
+                throw "fail to get file size";
+            }
 
-        buf.resize(srcSize + 1);
-        in.read(buf.data(), srcSize);
-        buf[srcSize] = '\0';
+            buf.resize((size_t)src_size + 1);
+            in.seekg(0).read(&buf[0], src_size);
+            buf[(size_t)src_size] = '\0';
 
-        in.close();
+            return true;
+        }
+        catch(std::exception const& e)
+        {
+            printf("%s> %s\n", __FUNCTION__, e.what());
+            return false;
+        }
+        catch(char const* str)
+        {
+            printf("%s> %s\n", __FUNCTION__, str);
+            return false;
+        }
+        catch(...)
+        {
+            printf("%s> unknown exception.\n", __FUNCTION__);
+            return false;
+        }
     }
 };
 
