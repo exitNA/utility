@@ -88,16 +88,24 @@ private:
     {
         // get current process directory and create log file path in the same
         // directory
-        char const* pfile_name = "log.txt";
-
-        size_t file_name_length = strlen(pfile_name);
         size_t path_buf_length = GetCurrentDirectoryA(0, NULL);
-
-        std::string dir(path_buf_length + file_name_length, '*');
-
+        std::string dir(path_buf_length, '*');
         GetCurrentDirectoryA(path_buf_length, &dir[0]);
         dir[path_buf_length - 1] = '\\';
-        memcpy(&dir[path_buf_length], pfile_name, file_name_length);
+        dir += "log_";
+
+        SYSTEMTIME lt;
+        GetLocalTime(&lt);
+        char nbuf[11];
+
+        _itoa(lt.wHour, nbuf, 10);
+        dir = dir + nbuf + ".";
+
+        _itoa(lt.wMinute, nbuf, 10);
+        dir = dir + nbuf + ".";
+
+        _itoa(lt.wSecond, nbuf, 10);
+        dir = dir + nbuf + ".txt";
 
         _pfile = fopen(dir.c_str(), "wb");
         if (_pfile == NULL)
