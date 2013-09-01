@@ -1,13 +1,31 @@
 #ifndef LOG_H
 #define LOG_H
 
-#include <windows.h>
 #include <string>
+#include <windows.h>
 #include "color_print.h"
+#include "file_system.h"
 
+////////////////////////////////////////////////////////////////////////////////
+// use mode switch
+////////////////////////////////////////////////////////////////////////////////
+#define LOGGER_AS_DLL              // uncomment this line will used as dll mode;
+                                   // comment it for normal use
 
-#define MAX_LOG_BUFFER_SIZE 65536
+#ifdef LOGGER_AS_DLL
+    #ifdef LOGGER_EXPORTS
+        #define LOGGER_API __declspec(dllexport)
+    #else
+        #define LOGGER_API __declspec(dllimport)
+    #endif
+#else
+    #define LOGGER_API
+#endif
+////////////////////////////////////////////////////////////////////////////////
+
+#define MAX_LOG_BUFFER_SIZE 4096
 #define MAX_ONE_LOG_LENGTH  1024
+#define LOG_ROOT_DIRECTORY  "log\\"
 
 
 #define _log_print(color, level, fmt, ...)                                  \
@@ -21,7 +39,7 @@
         __FUNCTION__,                                                       \
         __VA_ARGS__);                                                       \
     printf(color, "%s", one_log_buf);                                       \
-    Logger::instance.write(one_log_buf, writen_len);                        \
+    Logger::instance().write(one_log_buf, writen_len);                      \
 }
 
 #define log_cyan(fmt, ...)    _log_print(ConsoleColor::Cyan,   info,    fmt, __VA_ARGS__)
@@ -33,9 +51,6 @@
 
 class Logger
 {
-public:
-    static Logger instance;
-
 private:
     FILE*   _pfile;
     size_t  _used_length;
@@ -43,38 +58,42 @@ private:
     char    _line_buf[MAX_ONE_LOG_LENGTH];
 
 public:
+    LOGGER_API static Logger& instance()
+    {
+        static Logger single;
+        return single;
+    }
 
-    inline void write(char const* pstr, size_t length)
+    LOGGER_API inline void write(char const* pstr, size_t length)
     {
         if (length + _used_length >= MAX_LOG_BUFFER_SIZE)
         {
             fwrite(_file_buffer, 1, _used_length, _pfile);
-            //fflush(_pfile);
+            fflush(_pfile);
             _used_length = 0;
         }
         memcpy(_file_buffer + _used_length, pstr, length);
         _used_length += length;
     }
 
-    void write(char const* fmt, ...)
+    LOGGER_API void write(char const* fmt, ...)
     {
         va_list args;
         va_start(args, fmt);
         int writen_len = _snprintf(_line_buf, MAX_ONE_LOG_LENGTH, fmt, args);
         va_end(args);
-
         write(_line_buf, writen_len);
     }
 
 private:
-    Logger() :
+    LOGGER_API Logger() :
         _pfile(NULL),
         _used_length(0)
     {
         create_file();
     }
 
-    ~Logger()
+    LOGGER_API ~Logger()
     {
         if (_pfile != NULL)
         {
@@ -84,38 +103,40 @@ private:
         }
     }
 
+    LOGGER_API Logger(Logger const& val);
+
+    LOGGER_API Logger& operator = (Logger const& val);
+
     void create_file()
     {
-        // get current process directory and create log file path in the same
-        // directory
-        size_t path_buf_length = GetCurrentDirectoryA(0, NULL);
-        std::string dir(path_buf_length, '*');
-        GetCurrentDirectoryA(path_buf_length, &dir[0]);
-        dir[path_buf_length - 1] = '\\';
-        dir += "log_";
+        // log file root directory
+        size_t path_len = GetCurrentDirectoryA(0, NULL);
+        std::string dir(path_len, '*');
+        GetCurrentDirectoryA(path_len, &dir[0]);
+        dir[path_len - 1] = '\\';
+        dir += LOG_ROOT_DIRECTORY;
 
+        // get current local time
         SYSTEMTIME lt;
         GetLocalTime(&lt);
-        char nbuf[11];
 
-        _itoa(lt.wHour, nbuf, 10);
-        dir = dir + nbuf + ".";
+        char path_name[MAX_PATH];   // path buffer
 
-        _itoa(lt.wMinute, nbuf, 10);
-        dir = dir + nbuf + ".";
+        // sub log directory name
+        _snprintf(path_name, MAX_PATH - 1, "%04d-%02d-%02d\\", lt.wYear, lt.wMonth, lt.wDay);
+        dir += path_name;
+        os::mkdirs(dir.c_str());
 
-        _itoa(lt.wSecond, nbuf, 10);
-        dir = dir + nbuf + ".txt";
+        // log file name
+        _snprintf(path_name, MAX_PATH - 1, "log-%02d-%02d-%02d.txt", lt.wHour, lt.wMinute, lt.wSecond);
+        dir += path_name;
 
         _pfile = fopen(dir.c_str(), "wb");
         if (_pfile == NULL)
         {
-            throw "fail to open log file.";
+            throw std::runtime_error("fail to open log file.");
         }
     }
-
 };
-
-// Loger Loger::instance;  // put it in a cpp file to instantiate the loger
 
 #endif

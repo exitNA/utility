@@ -13,7 +13,6 @@ namespace os
     inline std::vector<std::string> lsdir(std::string const& dir)
     {
         std::string temp_dir(dir + "/*");
-
         WIN32_FIND_DATAA ffd;
         HANDLE hFind = FindFirstFileA(temp_dir.c_str(), &ffd);
 
@@ -99,40 +98,28 @@ namespace os
     }
 
 
-    inline bool read_file(std::vector<char>& buf, const char* file_path_name,
+    inline void read_file(std::vector<char>& buf, const char* file_path_name,
         std::ios::openmode mode = std::ios::binary)
     {
-        try
+        std::ifstream in(file_path_name, mode);
+        if (!in.good())
         {
-            std::ifstream in(file_path_name, mode);
-            std::streamoff src_size = in.seekg(0, std::ios::end).tellg();
-            if (src_size == -1)
-            {
-                buf.clear();
-                throw "fail to get file size";
-            }
+            std::string err_info("fail to open file: ");
+            err_info += file_path_name;
+            throw std::exception(err_info.c_str());
+        }
 
-            buf.resize((size_t)src_size + 1);
-            in.seekg(0).read(&buf[0], src_size);
-            buf[(size_t)src_size] = '\0';
+        std::streamoff src_size = in.seekg(0, std::ios::end).tellg();
+        if (src_size == -1)
+        {
+            std::string err_info("fail to get file size: ");
+            err_info += file_path_name;
+            throw std::exception(err_info.c_str());
+        }
 
-            return true;
-        }
-        catch(std::exception const& e)
-        {
-            printf("%s> %s\n", __FUNCTION__, e.what());
-            return false;
-        }
-        catch(char const* str)
-        {
-            printf("%s> %s\n", __FUNCTION__, str);
-            return false;
-        }
-        catch(...)
-        {
-            printf("%s> unknown exception.\n", __FUNCTION__);
-            return false;
-        }
+        buf.resize((size_t)src_size + 1);
+        in.seekg(0).read(&buf[0], src_size);
+        buf[(size_t)src_size] = '\0';
     }
 };
 

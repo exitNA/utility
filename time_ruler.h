@@ -2,8 +2,6 @@
 #define TIME_RULER_H_
 
 #include <windows.h>
-#include <stdio.h>
-#include <stdint.h>
 
 class TimeRuler
 {
@@ -18,7 +16,7 @@ public:
     }
 
     ~TimeRuler()
-    {
+    { 
         if (m_show_mode == AutoShow)
         {
             _show("[live time]");
@@ -30,13 +28,20 @@ public:
         _show("[time elapsed]");
     }
 
-    uint64_t elapsed_ms()
+    size_t elapsed_ms()
     {
-        return GetTickCount() - m_start;
+        DWORD current = GetTickCount();
+        if (current <= m_start)
+        {
+            return 0;
+        }
+        else
+        {
+            return current - m_start;
+        }
     }
 
 private:
-
     void _show(char const * const log)
     {
         DWORD stop = GetTickCount();

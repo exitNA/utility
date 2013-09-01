@@ -172,4 +172,40 @@ inline bool is_symbol(std::string const& str)
     return true;
 }
 
+
+inline char* truncate_line(size_t& length, char* const psrc)
+{
+    char* ptr = psrc;
+    char c    = *ptr;
+    while (c != '\n' && c != '\0')
+    {
+        ptr++;
+        c = *ptr;
+    }
+    length = ptr - psrc;
+    if (c == '\0') // string end
+    {
+        return NULL;
+    }
+
+    if ((ptr > psrc) && (*(ptr - 1) == '\r'))
+    {
+        length--;
+        *(ptr - 1) = '\0';
+    }
+    else
+    {
+        *ptr = '\0';
+    }
+    return ptr + 1;
+}
+
+inline bool greater_integer_string(std::string const& smaller, std::string const& greater)
+{
+    uint32_t na = str2num<uint32_t>(smaller);
+    uint32_t nb = str2num<uint32_t>(greater);
+    return na < nb;
+}
+
+
 #endif
