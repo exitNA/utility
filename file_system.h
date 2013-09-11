@@ -6,7 +6,7 @@
 #include <list>
 #include <string>
 #include <vector>
-#include <exception>
+#include <stdexcept>
 
 namespace os
 {
@@ -106,7 +106,7 @@ namespace os
         {
             std::string err_info("fail to open file: ");
             err_info += file_path_name;
-            throw std::exception(err_info.c_str());
+            throw std::invalid_argument(err_info);
         }
 
         std::streamoff src_size = in.seekg(0, std::ios::end).tellg();
@@ -114,7 +114,7 @@ namespace os
         {
             std::string err_info("fail to get file size: ");
             err_info += file_path_name;
-            throw std::exception(err_info.c_str());
+            throw std::invalid_argument(err_info);
         }
 
         buf.resize((size_t)src_size + 1);
