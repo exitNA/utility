@@ -7,6 +7,7 @@ progressbar style:
 #define PROGRESS_BAR_H_
 
 #include <stdio.h>
+#include <string.h>
 #include <vector>
 
 #ifdef _WIN32
@@ -40,7 +41,7 @@ public:
         _buf.resize(HEAD_LENGTH + bar_length + 2); // 2 = "]\0"
         _total_bar_length = bar_length;
 
-        printf("total num: %d\n", _total);
+        printf("total number: %d\n", _total);
     }
 
     void update(size_t num)
@@ -73,6 +74,7 @@ public:
         pbar[1] = 0;
 
         printf("\r%s", _buf.data());
+        fflush(stdout);
     }
 
     void finish()
@@ -81,4 +83,5 @@ public:
         printf("\n");
     }
 };
+
 #endif
