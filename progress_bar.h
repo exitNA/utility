@@ -9,7 +9,7 @@ progressbar style:
 #include <stdio.h>
 #include <vector>
 
-#ifdef WIN32
+#ifdef _WIN32
     #define snprintf _snprintf
 #endif
 
@@ -39,6 +39,8 @@ public:
         _total = range > 1 ? range : 1;
         _buf.resize(HEAD_LENGTH + bar_length + 2); // 2 = "]\0"
         _total_bar_length = bar_length;
+
+        printf("total num: %d\n", _total);
     }
 
     void update(size_t num)
