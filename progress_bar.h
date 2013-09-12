@@ -41,7 +41,7 @@ public:
         _buf.resize(HEAD_LENGTH + bar_length + 2); // 2 = "]\0"
         _total_bar_length = bar_length;
 
-        printf("total number: %d\n", _total);
+        printf("total number: %Iu\n", _total);
     }
 
     void update(size_t num)
@@ -56,7 +56,7 @@ public:
 
         // write the percentage
         char* pbar = _buf.data();
-        int count = snprintf(pbar, HEAD_LENGTH + 1, "%3d%% [", percent);
+        int count = snprintf(pbar, HEAD_LENGTH + 1, "%3Iu%% [", percent);
         pbar += count;
 
         // write the finish bar
