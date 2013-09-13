@@ -18,26 +18,29 @@ class ProgressBar
 {
     static const size_t HEAD_LENGTH = 6;
 
-    size_t _total;
-    size_t _total_bar_length;
-    std::vector<char> _buf;
+    size_t _prev_percent;       // previous percent
+    size_t _total;              // total work number
+    size_t _total_bar_length;   // console bar length
+    std::vector<char> _buf;     // bar string buffer
 
     char   _finish_style;
     char   _unfinish_style;
 
 public:
     ProgressBar(char finish_style = '|', char unfinish_style = '-') :
+        _prev_percent((size_t)-1),
         _total(0),
         _total_bar_length(0),
         _finish_style(finish_style),
         _unfinish_style(unfinish_style)
     {
-
     }
 
     void init(size_t range, size_t bar_length = 80)
     {
+        _prev_percent = (size_t)-1;
         _total = range > 1 ? range : 1;
+
         _buf.resize(HEAD_LENGTH + bar_length + 2); // 2 = "]\0"
         _total_bar_length = bar_length;
 
@@ -46,21 +49,22 @@ public:
 
     void update(size_t num)
     {
-        if (num > _total || 100 * num % _total != 0)
+        // compute current percentage
+        size_t curr_percent = 100 * num / _total;
+        if (curr_percent == _prev_percent)
         {
             return;
         }
-
-        // compute percentage
-        size_t percent = 100 * num / _total;
+        // record current percentage
+        _prev_percent = curr_percent;
 
         // write the percentage
         char* pbar = _buf.data();
-        int count = snprintf(pbar, HEAD_LENGTH + 1, "%3Iu%% [", percent);
+        int count = snprintf(pbar, HEAD_LENGTH + 1, "%3Iu%% [", curr_percent);
         pbar += count;
 
         // write the finish bar
-        size_t bar_len = percent * _total_bar_length / 100;
+        size_t bar_len = curr_percent * _total_bar_length / 100;
         memset(pbar, _finish_style, bar_len);
         pbar += bar_len;
 
