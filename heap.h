@@ -4,14 +4,33 @@
 /* root is always at the head
 /* min heap
 /************************************************************************/
+#include <iostream>
+#include <algorithm>
 
 template<typename T>
+struct max_heap_cmp
+{
+    inline bool operator () (T const& parent, T const& child)
+    {
+        return parent > child;
+    }
+};
+
+template<typename T>
+struct min_heap_cmp
+{
+    inline bool operator () (T const& parent, T const& child)
+    {
+        return parent < child;
+    }
+};
+template<typename T, typename Compare = min_heap_cmp<T>>
 class Heap
 {
     T*     _pdata;
     size_t _capacity;
     size_t _size;
-
+    Compare _cmp_fun;
 public:
     Heap(size_t length = 0)
         : _pdata(NULL)
@@ -26,7 +45,10 @@ public:
         if (_pdata != NULL)
         {
             delete [] _pdata;
+            _pdata = NULL;
         }
+        _capacity = 0;
+        _size = 0;
     }
 
     void resize(size_t length)
@@ -39,12 +61,14 @@ public:
         T* ptemp = new T[length];
         if (_size > length)
         {
-            sort();
             _size = length;
         }
-        memcpy(ptemp, _pdata, _size);
+        // copy data to new memory
+        memcpy(ptemp, _pdata, _size * sizeof(T));
+
         delete [] _pdata;
         _pdata = ptemp;
+
         _capacity = length;
     }
 
@@ -52,78 +76,82 @@ public:
     {
         if (_size < _capacity) // not full
         {
-            // store new value at the end for temporary
-            size_t curr = _size++;
-            size_t p = 0;
-            // keep min heapify
-            while ((curr > 0) && (val < _pdata[p = parent(curr)]))
-            {
-                // parent down
-                _pdata[curr] = _pdata[p];
-                curr = p;
-            }
-            _pdata[curr] = val;
+            bubble_up(_size, val);
+            _size++;
         }
         else // full
         {
-            keep_heapify(0, val);
+            bubble_down(0, val);
         }
     }
 
     void sort()
     {
-        std::sort(_pdata, _pdata + _size);
+        std::sort(_pdata, _pdata + _size, _cmp_fun);
     }
 
     void print()
     {
         sort();
-        for (size_t i = 0; i < _size; ++i)
+        size_t i = 0;
+        std::cout << _pdata[i++];
+        for (; i < _size; ++i)
         {
-            std::cout << _pdata[i] << ", ";
+            std::cout << ", " << _pdata[i];
         }
         std::cout << std::endl;
     }
 
 private:
-    inline size_t parent(size_t idx)
+    inline size_t parent_pos(size_t idx)
     {
         return ((idx - 1) >> 1);
     }
 
-    inline size_t left_child(size_t idx)
+    inline size_t lchild_pos(size_t idx)
     {
         return ((idx << 1) + 1);
     }
 
-    inline size_t right_child(size_t idx)
+    inline size_t rchild_pos(size_t idx)
     {
         return ((idx << 1) + 2);
     }
 
-    inline void keep_heapify( size_t curr, T const& val ) 
+    inline void bubble_up(size_t pos, T const& val)
     {
-        if (val < _pdata[curr]) // smaller than root
+        size_t p = 0;
+        while ((pos > 0) && _cmp_fun(val, _pdata[p = parent_pos(pos)]))
+        {
+            _pdata[pos] = _pdata[p];
+            pos = p;
+        }
+        _pdata[pos] = val;
+    }
+
+    inline void bubble_down(size_t pos, T const& val) 
+    {
+        if (_cmp_fun(_pdata[pos], val))
         {
             return;
         }
 
-        size_t l;
-        size_t r;
-        size_t smallest;
-        while (((l = left_child(curr)) < _capacity) // it has left child
-            && val > _pdata[l])
+        size_t l = 0;
+        size_t r = 0;
+        size_t p = pos;
+        while (((l = lchild_pos(pos)) < _size) // it has left child
+            && _cmp_fun(_pdata[l], val))
         {
-            smallest = l;
-            if (((r = right_child(curr)) < _capacity) // it has right child
-                && (_pdata[l] > _pdata[r]))
+            p = l;
+            if (((r = rchild_pos(pos)) < _size) // it has right child
+                && _cmp_fun(_pdata[r], _pdata[p]))
             {
-                smallest = r;
+                p = r;
             }
-            _pdata[curr] = _pdata[smallest];
-            curr = smallest;
+            _pdata[pos] = _pdata[p];
+            pos = p;
         }
-        _pdata[curr] = val;
+        _pdata[pos] = val;
     }
 };
 
