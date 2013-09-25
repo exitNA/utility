@@ -77,7 +77,7 @@ public:
         _capacity = length;
     }
 
-    void insert(T const& val)
+    inline void insert(T const& val)
     {
         if (_size < _capacity) // not full
         {
@@ -137,7 +137,7 @@ public:
         return _size;
     }
 
-    void erase(size_t pos)
+    inline void erase(size_t pos)
     {
         if (pos >= _size)   // range exceed
         {
