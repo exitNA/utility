@@ -32,14 +32,12 @@ class Heap
     size_t  _capacity;
     size_t  _size;
     Compare _heapify_fun;
-    bool    _is_sorted;
 
 public:
     Heap(size_t length = 0)
         : _pdata(NULL)
         , _capacity(0)
         , _size(0)
-        , _is_sorted(false)
     {
         resize(length);
     }
@@ -96,12 +94,6 @@ public:
 
     void sort()
     {
-//        if (_is_sorted)
-//        {
-//            return;
-//        }
-//        _is_sorted = true;
-
         size_t org_size = _size; // keep orginal size
         T val;
         while (_size > 0)

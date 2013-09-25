@@ -12,7 +12,7 @@ void progress_bar_test()
 {
     printf("*** progressbar test begin ***\n");
     ProgressBar bar;
-    size_t range = 53;
+    size_t range = 37;
     bar.init(range);
 
     for (size_t i = 0; i < range; ++i)
@@ -32,6 +32,7 @@ bool benchmark_heap_cmp(size_t a, size_t b)
 {
     return a < b;
 }
+
 void benchmark_heap_test()
 {
     printf("\n*** benchmark heap test begin ***\n");
