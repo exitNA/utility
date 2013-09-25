@@ -3,4 +3,35 @@
   <ItemGroup>
     <ClCompile Include="test.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\color_print.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\file_system.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\graph.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\heap.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\log.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\progress_bar.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\string_ext.h">
+      <Filter>include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\time_ruler.h">
+      <Filter>include</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{abe7b98e-630a-4571-a81e-43b88acd6329}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>
