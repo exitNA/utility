@@ -1,37 +1,34 @@
-#ifndef HEAP_H
-#define HEAP_H
-/************************************************************************/
-/* root is always at the head
-/************************************************************************/
+/**
+* \breaf: a template heap class for get max/min n value from large scale dataset
+* \note : root is always at the head
+*/
+#ifndef HEAP_H_
+#define HEAP_H_
 #include <iostream>
 #include <algorithm>
 
-template<typename T>
-struct max_heap_cmp
+template <typename T>
+inline bool max_heap_cmp(T const& parent, T const& child)
 {
-    inline bool operator () (T const& parent, T const& child)
-    {
-        return (parent > child);
-    }
-};
+    return (parent > child);
+}
 
-template<typename T>
-struct min_heap_cmp
+template <typename T>
+inline bool min_heap_cmp(T const& parent, T const& child)
 {
-    inline bool operator () (T const& parent, T const& child)
-    {
-        return (parent < child);
-    }
-};
+    return (parent < child);
+}
 
-template<typename T,
-    typename Compare = min_heap_cmp<T> >
+
+template <
+    typename T
+    , bool (*_heapify_fun)(T const& parent, T const& child) = min_heap_cmp
+    >
 class Heap
 {
     T*      _pdata;
     size_t  _capacity;
     size_t  _size;
-    Compare _heapify_fun;
 
 public:
     Heap(size_t length = 0)
@@ -121,6 +118,11 @@ public:
     T* data()
     {
         return _pdata;
+    }
+
+    inline T& operator [] (size_t idx)
+    {
+        return _pdata[idx];
     }
 
     size_t size() const

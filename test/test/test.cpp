@@ -1,3 +1,4 @@
+#include <string>
 #include "progress_bar.h"
 #include "heap.h"
 #include "time_ruler.h"
@@ -10,7 +11,7 @@
 
 void progress_bar_test()
 {
-    printf("*** progressbar test begin ***\n");
+    printf("\n*** progressbar test begin ***\n");
     ProgressBar bar;
     size_t range = 37;
     bar.init(range);
@@ -28,42 +29,54 @@ void progress_bar_test()
     printf("*** progressbar test finish ***\n");
 }
 
-bool benchmark_heap_cmp(size_t a, size_t b)
+typedef std::pair<std::string, size_t> Elem;
+
+bool benchmark_heap_cmp(Elem const& a, Elem const& b)
 {
-    return a < b;
+    return a.second > b.second;
 }
 
 void benchmark_heap_test()
 {
     printf("\n*** benchmark heap test begin ***\n");
+    std::string prefix("abc");
     size_t size = 100000;
     size_t top_n = 5;
-    size_t* parray = new size_t[size];
+    Elem* parray = new Elem[size];
     for (size_t i = 0; i < size; ++i)
     {
-        parray[i] = i;
+        parray[i] = std::make_pair(prefix + std::to_string(i), i);
     }
     for (size_t i = 0; i < size; ++i)
     {
         std::swap(parray[i], parray[rand() % (size - i) + i]);
     }
     {
+        // heap sort
         TimeRuler t;
-        Heap<size_t, max_heap_cmp<size_t> > mhp(top_n);
+        Heap<Elem, benchmark_heap_cmp> hp(top_n);
         for (size_t i = 0; i < size; ++i)
         {
-            mhp.insert(parray[i]);
+            hp.insert(parray[i]);
         }
-        mhp.print();
+        hp.sort();
+        std::cout << hp[0].first;
+        for (size_t i = 1; i < top_n; ++i)
+        {
+            std::cout << ", " << hp[i].first;
+        }
+        std::cout << std::endl;
+
     }
     
     {
+        // qsort
         TimeRuler t;
         std::sort(parray, parray + size, benchmark_heap_cmp);
-        std::cout << parray[0];
+        std::cout << parray[0].first;
         for (size_t i = 1; i < top_n; ++i)
         {
-            std::cout << ", " << parray[i];
+            std::cout << ", " << parray[i].first;
         }
         std::cout << std::endl;
     }
@@ -74,7 +87,7 @@ void benchmark_heap_test()
 
 int main(int argc, char* argv[])
 {
-    progress_bar_test();
     benchmark_heap_test();
+    progress_bar_test();
     return 0;
 }
