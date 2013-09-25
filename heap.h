@@ -1,18 +1,26 @@
 /**
-* \breaf: a template heap class for get max/min n value from large scale dataset
-* \note : root is always at the head
+* \brief   a template heap class for get max/min n value from large scale dataset
+* \note    root is always at the head
+* \version 1.0
 */
 #ifndef HEAP_H_
 #define HEAP_H_
+
 #include <iostream>
 #include <algorithm>
 
+/**
+* \brief max heap template function
+*/
 template <typename T>
 inline bool max_heap_cmp(T const& parent, T const& child)
 {
     return (parent > child);
 }
 
+/**
+* \brief min heap template function
+*/
 template <typename T>
 inline bool min_heap_cmp(T const& parent, T const& child)
 {
@@ -20,6 +28,10 @@ inline bool min_heap_cmp(T const& parent, T const& child)
 }
 
 
+/**
+* \class Heap class
+* \note 
+*/
 template <
     typename T
     , bool (*_heapify_fun)(T const& parent, T const& child) = min_heap_cmp
@@ -89,7 +101,7 @@ public:
         _size = 0;
     }
 
-    void sort()
+    inline void sort()
     {
         size_t org_size = _size; // keep orginal size
         T val;
@@ -101,23 +113,6 @@ public:
             bubble_down(0, val);
         }
         _size = org_size;
-    }
-
-    void print()
-    {
-        sort();
-        size_t i = 0;
-        std::cout << _pdata[i++];
-        for (; i < _size; ++i)
-        {
-            std::cout << ", " << _pdata[i];
-        }
-        std::cout << std::endl;
-    }
-
-    T* data()
-    {
-        return _pdata;
     }
 
     inline T& operator [] (size_t idx)
