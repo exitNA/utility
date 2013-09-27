@@ -1,6 +1,10 @@
 #ifndef LOG_H
 #define LOG_H
 
+#ifndef _WIN32
+    #error "Logger only works on windows platform"
+#endif
+
 #include <string>
 #include <windows.h>
 #include "color_print.h"
@@ -8,9 +12,8 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 // use mode switch
+// if define LOGGER_AS_DLL, it will used as dll mode, otherwise for normal use
 ////////////////////////////////////////////////////////////////////////////////
-#define LOGGER_AS_DLL              // uncomment this line will used as dll mode;
-                                   // comment it for normal use
 
 #ifdef LOGGER_AS_DLL
     #ifdef LOGGER_EXPORTS
