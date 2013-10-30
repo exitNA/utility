@@ -27,13 +27,15 @@ class ProgressBar
     char   _unfinish_style;
 
 public:
-    ProgressBar(char finish_style = '|', char unfinish_style = '-') :
+    ProgressBar(size_t range = 100, size_t bar_length = 80,
+        char finish_style = '|', char unfinish_style = '-') :
         _prev_percent((size_t)-1),
         _total(0),
         _total_bar_length(0),
         _finish_style(finish_style),
         _unfinish_style(unfinish_style)
     {
+        init(range, bar_length);
     }
 
     void init(size_t range, size_t bar_length = 80)
@@ -44,7 +46,7 @@ public:
         _buf.resize(HEAD_LENGTH + bar_length + 2); // 2 = "]\0"
         _total_bar_length = bar_length;
 
-        printf("total number: %Iu\n", _total);
+        printf("\ntotal: %Iu\n", _total);
     }
 
     void update(size_t num)

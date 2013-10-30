@@ -40,45 +40,42 @@ void benchmark_heap_test()
 {
     printf("\n*** benchmark heap test begin ***\n");
     std::string prefix("abc");
-    size_t size = 100000;
-    size_t top_n = 5;
-    Elem* parray = new Elem[size];
+    size_t size = 1000000;
+    size_t top_n = 50;
+    int* parray = new int[size];
+
     for (size_t i = 0; i < size; ++i)
     {
-        parray[i] = std::make_pair(prefix + std::to_string(i), i);
-    }
-    for (size_t i = 0; i < size; ++i)
-    {
-        std::swap(parray[i], parray[rand() % (size - i) + i]);
+        parray[i] =  rand();
     }
     {
         // heap sort
         TimeRuler t;
-        Heap<Elem, benchmark_heap_cmp> hp(top_n);
+        Heap<int> hp(top_n);
         for (size_t i = 0; i < size; ++i)
         {
             hp.insert(parray[i]);
         }
         hp.sort();
-        std::cout << hp[0].first;
-        for (size_t i = 1; i < top_n; ++i)
-        {
-            std::cout << ", " << hp[i].first;
-        }
-        std::cout << std::endl;
+//        std::cout << hp[0];
+//        for (size_t i = 1; i < top_n; ++i)
+//        {
+//            std::cout << ", " << hp[i];
+//        }
+//        std::cout << std::endl;
 
     }
     
     {
         // qsort
         TimeRuler t;
-        std::sort(parray, parray + size, benchmark_heap_cmp);
-        std::cout << parray[0].first;
-        for (size_t i = 1; i < top_n; ++i)
-        {
-            std::cout << ", " << parray[i].first;
-        }
-        std::cout << std::endl;
+        std::sort(parray, parray + size);
+//        std::cout << parray[0];
+//        for (size_t i = 1; i < top_n; ++i)
+//        {
+//            std::cout << ", " << parray[i];
+//        }
+//        std::cout << std::endl;
     }
 
     delete [] parray;

@@ -37,13 +37,14 @@
     SYSTEMTIME lt;                                                          \
     GetLocalTime(&lt);                                                      \
     int writen_len = _snprintf(one_log_buf, MAX_ONE_LOG_LENGTH,             \
-        "%02d:%02d:%02d:%03d-%s>["#level"] " fmt "\n",                      \
+        "\n%02d:%02d:%02d:%03d-%s>["#level"] " fmt,                         \
         lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds,                 \
         __FUNCTION__,                                                       \
         __VA_ARGS__);                                                       \
-    printf(color, "%s", one_log_buf);                                       \
+    printf(color, "%s", one_log_buf); fflush(stdout);                       \
     Logger::instance().write(one_log_buf, writen_len);                      \
 }
+
 
 #define log_cyan(fmt, ...)    _log_print(ConsoleColor::Cyan,   info,    fmt, __VA_ARGS__)
 #define log_white(fmt, ...)   _log_print(ConsoleColor::White,  info,    fmt, __VA_ARGS__)
