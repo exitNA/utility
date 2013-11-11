@@ -10,10 +10,6 @@ progressbar style:
 #include <string.h>
 #include <vector>
 
-#ifdef _WIN32
-    #define snprintf _snprintf
-#endif
-
 class ProgressBar
 {
     static const size_t HEAD_LENGTH = 6;
@@ -27,15 +23,13 @@ class ProgressBar
     char   _unfinish_style;
 
 public:
-    ProgressBar(size_t range = 100, size_t bar_length = 80,
-        char finish_style = '|', char unfinish_style = '-') :
+    ProgressBar(char finish_style = '|', char unfinish_style = '-') :
         _prev_percent((size_t)-1),
         _total(0),
         _total_bar_length(0),
         _finish_style(finish_style),
         _unfinish_style(unfinish_style)
     {
-        init(range, bar_length);
     }
 
     void init(size_t range, size_t bar_length = 80)
@@ -62,7 +56,12 @@ public:
 
         // write the percentage
         char* pbar = _buf.data();
-        int count = snprintf(pbar, HEAD_LENGTH + 1, "%3Iu%% [", curr_percent);
+
+#ifdef _WIN32
+        int count = _snprintf(pbar, HEAD_LENGTH + 1, "%3Iu%% [", curr_percent);
+#elif defined __GNUC__
+        int count =  snprintf(pbar, HEAD_LENGTH + 1, "%3zu%% [", curr_percent);
+#endif
         pbar += count;
 
         // write the finish bar
