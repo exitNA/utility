@@ -90,7 +90,7 @@ public:
             bubble_up(_size, val);
             _size++;
         }
-        else // full
+        else if (_heapify_fun(_pdata[0], val)) // full
         {
             bubble_down(0, val);
         }
