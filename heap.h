@@ -125,17 +125,6 @@ public:
         return _size;
     }
 
-    inline void erase(size_t pos)
-    {
-        if (pos >= _size)   // range exceed
-        {
-            return;
-        }
-
-        T val = _pdata[--_size]; // get last element
-        bubble_down(pos, val);
-    }
-
 private:
     inline size_t parent_pos(size_t idx)
     {
@@ -165,12 +154,6 @@ private:
 
     inline void bubble_down(size_t pos, T const& val) 
     {
-        // test if val as a parent of the _pdata[pos] is ok
-        if (_heapify_fun(val, _pdata[pos]))
-        {
-            return;
-        }
-
         size_t l = 0;
         size_t r = 0;
         size_t p = pos;
