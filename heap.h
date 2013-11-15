@@ -6,8 +6,7 @@
 #ifndef HEAP_H_
 #define HEAP_H_
 
-#include <iostream>
-#include <algorithm>
+#include <string>
 
 /**
 * \brief max heap template function
@@ -30,7 +29,6 @@ inline bool min_heap_cmp(T const& parent, T const& child)
 
 /**
 * \class Heap class
-* \note 
 */
 template <
     typename T
@@ -59,6 +57,26 @@ public:
             _pdata = NULL;
         }
         _capacity = 0;
+        _size = 0;
+    }
+
+    size_t size() const
+    {
+        return _size;
+    }
+
+    size_t capacity() const
+    {
+        return _capacity;
+    }
+
+    inline T& operator [] (size_t idx)
+    {
+        return _pdata[idx];
+    }
+
+    void clear()
+    {
         _size = 0;
     }
 
@@ -96,16 +114,11 @@ public:
         }
     }
 
-    void clear()
-    {
-        _size = 0;
-    }
-
     inline void sort()
     {
         size_t org_size = _size; // keep orginal size
         T val;
-        while (_size > 0)
+        while (_size > 1)
         {
             _size--;
             val = _pdata[_size]; // get last element
@@ -113,16 +126,6 @@ public:
             bubble_down(0, val);
         }
         _size = org_size;
-    }
-
-    inline T& operator [] (size_t idx)
-    {
-        return _pdata[idx];
-    }
-
-    size_t size() const
-    {
-        return _size;
     }
 
 private:
