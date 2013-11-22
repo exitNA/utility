@@ -1,7 +1,10 @@
 #include <string>
+#include <algorithm>
+
 #include "progress_bar.h"
 #include "heap.h"
 #include "time_ruler.h"
+#include "binary_file.h"
 
 #ifdef _WIN32
     #include <windows.h>
@@ -82,9 +85,19 @@ void benchmark_heap_test()
     printf("*** benchmark heap test finish ***\n");
 }
 
+void buffer_writer_test()
+{
+    printf("\n****** %s ********\n", __FUNCTION__);
+    BinaryFile f("d:/test.bin");
+
+}
+
+
 int main(int argc, char* argv[])
 {
     benchmark_heap_test();
     progress_bar_test();
+    buffer_writer_test();
+
     return 0;
 }

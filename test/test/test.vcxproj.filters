@@ -28,6 +28,9 @@
     <ClInclude Include="..\..\time_ruler.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\binary_file.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
