@@ -1,5 +1,5 @@
-#ifndef BINARY_FILE_
-#define BINARY_FILE_
+#ifndef BINARY_FILE_H_
+#define BINARY_FILE_H_
 
 #include <limits>
 #include <fstream>
@@ -56,7 +56,7 @@ public:
 
         if (_pbuf != NULL)
         {
-            delete[] _pbuf;
+            delete [] _pbuf;
             _pbuf = NULL;
         }
         _capacity = 0;
