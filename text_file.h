@@ -26,6 +26,11 @@ public:
 
     ~TextFile()
     {
+        close();
+    }
+
+    void close()
+    {
         if (_size != 0)
         {
             _out.write(_pbuf, _size); // write the rest
@@ -41,6 +46,7 @@ public:
         _out.close();
     }
 
+
     void open(char const * const filePath)
     {
         _out.open(filePath, std::ios::binary);
@@ -54,28 +60,12 @@ public:
 
     TextFile& operator << (std::string const& str)
     {
-        // check the rest buffer
-        _check_buffer_size(str.size());
-
-        // copy the string to the buffer
-        memcpy(_pbuf + _size, str.c_str(), str.size());
-        _size += str.size();
-
-        return *this;
+        return write(str.c_str(), str.size());
     }
 
     TextFile& operator << (char const* pstr)
     {
-        size_t str_size = strlen(pstr);
-
-        // check the rest buffer
-        _check_buffer_size(str_size);
-
-        // copy the string to the buffer
-        memcpy(_pbuf + _size, pstr, str_size);
-        _size += str_size;
-
-        return *this;
+        return write(pstr, strlen(pstr));
     }
 
     TextFile& operator << (const size_t val)
@@ -124,6 +114,20 @@ public:
 
         return *this;
     }
+
+    template<typename T>
+    TextFile& write(T const * const psrc, size_t size)
+    {
+        // check the rest buffer
+        _check_buffer_size(size);
+
+        // copy the string to the buffer
+        memcpy(_pbuf + _size, psrc, size);
+        _size += size;
+
+        return *this;
+    }
+
 
 private:
     inline void _check_buffer_size(size_t in_size)
