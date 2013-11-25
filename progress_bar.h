@@ -66,10 +66,18 @@ public:
 
         // write the finish bar
         size_t bar_len = curr_percent * _total_bar_length / 100;
+
+        // check bar length not exceed total bar length
+        if (bar_len > _total_bar_length)
+        {
+            bar_len = _total_bar_length;
+        }
+
+        // fill out finish bar
         memset(pbar, _finish_style, bar_len);
         pbar += bar_len;
 
-        // write the unfinish bar
+        // fill out unfinish bar
         bar_len = _total_bar_length - bar_len;
         memset(pbar, _unfinish_style, bar_len);
         pbar += bar_len;
