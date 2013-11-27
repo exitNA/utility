@@ -1,6 +1,7 @@
 /**
 * \brief   a template heap class for get max/min n value from large scale dataset
 * \note    root is always at the head
+* \author  mark
 * \version 1.0
 */
 #ifndef HEAP_H_
@@ -87,13 +88,18 @@ public:
             return;
         }
 
+        // create new space
         T* ptemp = new T[length];
         if (_size > length)
         {
             _size = length;
         }
-        // copy data to new memory
-        memcpy(ptemp, _pdata, _size * sizeof(T));
+
+        // copy data to new space
+        for (size_t i = 0; i < _size; ++i)
+        {
+            ptemp[i] = _pdata[i];
+        }
 
         delete [] _pdata;
         _pdata = ptemp;
@@ -116,7 +122,7 @@ public:
 
     inline void sort()
     {
-        size_t org_size = _size; // keep orginal size
+        size_t org_size = _size; // keep original size
         T val;
         while (_size > 1)
         {
@@ -129,17 +135,17 @@ public:
     }
 
 private:
-    inline size_t parent_pos(size_t idx)
+    inline size_t parent_of(size_t idx)
     {
         return ((idx - 1) >> 1);
     }
 
-    inline size_t lchild_pos(size_t idx)
+    inline size_t left_child_of(size_t idx)
     {
         return ((idx << 1) + 1);
     }
 
-    inline size_t rchild_pos(size_t idx)
+    inline size_t right_child_of(size_t idx)
     {
         return ((idx << 1) + 2);
     }
@@ -147,7 +153,7 @@ private:
     inline void bubble_up(size_t pos, T const& val)
     {
         size_t p = 0;
-        while ((pos > 0) && _heapify_fun(val, _pdata[p = parent_pos(pos)]))
+        while ((pos > 0) && _heapify_fun(val, _pdata[p = parent_of(pos)]))
         {
             _pdata[pos] = _pdata[p];
             pos = p;
@@ -155,22 +161,32 @@ private:
         _pdata[pos] = val;
     }
 
-    inline void bubble_down(size_t pos, T const& val) 
+    inline void bubble_down(size_t pos, T const& val)
     {
-        size_t l = 0;
-        size_t r = 0;
-        size_t p = pos;
-        while (((l = lchild_pos(pos)) < _size) // it has left child
-            && _heapify_fun(_pdata[l], val))
+        size_t child = 0;
+        size_t left  = 0;
+        size_t right = 0;
+
+        while ((left = left_child_of(pos)) < _size) // left child position
         {
-            p = l;
-            if (((r = rchild_pos(pos)) < _size) // it has right child
-                && _heapify_fun(_pdata[r], _pdata[p]))
+            // right child position
+            right = left + 1;
+
+            // get best child position
+            child = right < _size
+                ? (_heapify_fun(_pdata[right], _pdata[left]) ? right : left)
+                : left;
+
+            // check if child could be a father
+            if (_heapify_fun(_pdata[child], val))
             {
-                p = r;
+                _pdata[pos] = _pdata[child];
+                pos = child;
             }
-            _pdata[pos] = _pdata[p];
-            pos = p;
+            else
+            {
+                break;
+            }
         }
         _pdata[pos] = val;
     }

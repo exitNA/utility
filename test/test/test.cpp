@@ -1,6 +1,8 @@
 #include <string>
 #include <algorithm>
-
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
 #include "progress_bar.h"
 #include "heap.h"
 #include "time_ruler.h"
@@ -32,24 +34,18 @@ void progress_bar_test()
     printf("*** progressbar test finish ***\n");
 }
 
-typedef std::pair<std::string, size_t> Elem;
-
-bool benchmark_heap_cmp(Elem const& a, Elem const& b)
-{
-    return a.second > b.second;
-}
 
 void benchmark_heap_test()
 {
     printf("\n*** benchmark heap test begin ***\n");
-    std::string prefix("abc");
     size_t size = 1000000;
-    size_t top_n = 50;
+    size_t top_n = 13;
     int* parray = new int[size];
-
+    printf("rand max: %d\n", RAND_MAX);
+    //std::srand(std::time(0));
     for (size_t i = 0; i < size; ++i)
     {
-        parray[i] =  rand();
+        parray[i] = std::rand() + std::rand();
     }
     {
         // heap sort
@@ -60,12 +56,12 @@ void benchmark_heap_test()
             hp.insert(parray[i]);
         }
         hp.sort();
-//        std::cout << hp[0];
-//        for (size_t i = 1; i < top_n; ++i)
-//        {
-//            std::cout << ", " << hp[i];
-//        }
-//        std::cout << std::endl;
+        std::cout << hp[0];
+        for (size_t i = 1; i < top_n; ++i)
+        {
+            std::cout << ", " << hp[i];
+        }
+        std::cout << std::endl;
 
     }
     
@@ -73,12 +69,12 @@ void benchmark_heap_test()
         // qsort
         TimeRuler t;
         std::sort(parray, parray + size);
-//        std::cout << parray[0];
-//        for (size_t i = 1; i < top_n; ++i)
-//        {
-//            std::cout << ", " << parray[i];
-//        }
-//        std::cout << std::endl;
+        std::cout << parray[size - 1];
+        for (size_t i = 1; i < top_n; ++i)
+        {
+            std::cout << ", " << parray[size - i - 1];
+        }
+        std::cout << std::endl;
     }
 
     delete [] parray;
