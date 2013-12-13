@@ -72,7 +72,7 @@ public:
     {
         // calculate required memory
         // 能够完全表示的有效位个数 + 1(不能完全表示的个数) + 1(符号) + 1('\0')
-        /*static */const int DIGITAL_WIDTH = std::numeric_limits<size_t>::digits10 + 3;
+        const int DIGITAL_WIDTH = std::numeric_limits<size_t>::digits10 + 3;
         _check_buffer_size(DIGITAL_WIDTH);
 
         // convert and write to memory
@@ -88,18 +88,31 @@ public:
 
     TextFile& operator << (const double val)
     {
-        // calculate required memory
-        /*static */const int DIGITAL_WIDTH = std::numeric_limits<double>::digits10 + 3;
-        _check_buffer_size(DIGITAL_WIDTH);
-
         // convert and write to memory
 #ifdef _WIN32
-        int written = _snprintf(_pbuf + _size, DIGITAL_WIDTH, "%0.15f", val); // 15 precision
+        int written = _snprintf(_pbuf + _size, _capacity - _size, "%f", val);
 #elif defined __GNUC__
-        int written = snprintf(_pbuf + _size, DIGITAL_WIDTH, "%0.15f", val); // 15 precision
+        int written = snprintf(_pbuf + _size, _capacity - _size, "%f", val);
 #endif
-        _size += written;
+        if (written < 0)
+        {   // error occurred, write previous data
+            _out.write(_pbuf, _size);
+            _size = 0;
 
+            // clear the buffer and rewrite once
+            written = _snprintf(_pbuf, _capacity, "%f", val);
+
+            // check again
+            if (written < 0)
+            {
+                std::string vs = std::to_string(val);
+                std::string err = "input value: " + vs + " need " + std::to_string(vs.length()) + " bytes, "
+                    "but the text file buffer only has " + std::to_string(_capacity) + " bytes space.";
+                throw std::out_of_range(err);
+            }
+        }
+
+        _size += written;
         return *this;
     }
 
