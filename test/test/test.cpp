@@ -88,12 +88,34 @@ void buffer_writer_test()
 
 }
 
+void time_ruler_test()
+{
+    {
+        TimeRuler t;
+        Sleep(500);
+    }
+    {
+        TimeRuler t;
+        Sleep(8000);
+    }
+    {
+        TimeRuler t;
+        Sleep(1000 * 70);
+    }
+}
 
 int main(int argc, char* argv[])
 {
     benchmark_heap_test();
     progress_bar_test();
     buffer_writer_test();
+//    time_ruler_test();
+    size_t elapsed = 1 * 60 * 1000;
+    if (elapsed >= 1000 * 60)
+    {
+        elapsed /= 1000;
+        printf("%s = %d min + %d s\n", "test", elapsed / 60, elapsed % 60);
+    }
 
     return 0;
 }

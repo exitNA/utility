@@ -10,14 +10,15 @@ public:
 
 public:
     explicit TimeRuler(Mode type = AutoShow) :
-        m_show_mode(type)
+        _show_mode(type)
     {
-        m_start = GetTickCount();
+        QueryPerformanceFrequency(&_freq);
+        QueryPerformanceCounter(&_start);
     }
 
     ~TimeRuler()
-    { 
-        if (m_show_mode == AutoShow)
+    {
+        if (_show_mode == AutoShow)
         {
             _show("[live time]");
         }
@@ -28,44 +29,46 @@ public:
         _show("[time elapsed]");
     }
 
-    size_t elapsed_ms()
+	void reset()
+	{
+        QueryPerformanceCounter(&_start);
+	}
+	
+    inline size_t elapsed_ms()
     {
-        DWORD current = GetTickCount();
-        if (current <= m_start)
+        QueryPerformanceCounter(&_end);
+		LARGE_INTEGER elapsed;
+		elapsed.QuadPart = _end.QuadPart - _start.QuadPart;
+		elapsed.QuadPart *= 1000; // s: *1, ms: *1000, microseconds: *1000000
+		elapsed.QuadPart /= _freq.QuadPart;
+		return (size_t)elapsed.QuadPart;
+    }
+
+private:
+    inline void _show(char const * const log)
+    {
+        size_t elapsed = elapsed_ms();
+		if (elapsed >= 1000 * 60)
+		{
+			elapsed /= 1000;
+            printf("%s = %d min + %d s\n", log, elapsed / 60, elapsed % 60);
+		}
+        else if (elapsed >= 1000)
         {
-            return 0;
+            printf("%s = %d s + %d ms\n", log, elapsed / 1000, elapsed % 1000);
         }
         else
         {
-            return current - m_start;
+            printf("%s = %d ms\n", log, elapsed);
         }
     }
 
 private:
-    void _show(char const * const log)
-    {
-        DWORD stop = GetTickCount();
-        m_elapsed = stop - m_start;
+    LARGE_INTEGER _freq;
+    LARGE_INTEGER _start;
+    LARGE_INTEGER _end;
 
-        if (stop <= m_start)
-        {
-            m_elapsed = 0;
-        }
-
-        if (m_elapsed > 1000)
-        {
-            printf("%s = %d s + %d ms\n", log, m_elapsed / 1000, m_elapsed % 1000);
-        }
-        else
-        {
-            printf("%s = %d ms\n", log, m_elapsed);
-        }
-    }
-
-private:
-    DWORD m_start;
-    DWORD m_elapsed;
-    Mode  m_show_mode;
+    Mode  _show_mode;
 };
 
 #endif
