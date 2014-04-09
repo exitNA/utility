@@ -13,7 +13,7 @@ public:
         _show_mode(type)
     {
         QueryPerformanceFrequency(&_freq);
-        QueryPerformanceCounter(&_start);
+        reset();
     }
 
     ~TimeRuler()
@@ -24,12 +24,12 @@ public:
         }
     }
 
-    void show()
+    inline void show()
     {
         _show("[time elapsed]");
     }
 
-	void reset()
+	inline void reset()
 	{
         QueryPerformanceCounter(&_start);
 	}
@@ -37,11 +37,13 @@ public:
     inline size_t elapsed_ms()
     {
         QueryPerformanceCounter(&_end);
-		LARGE_INTEGER elapsed;
-		elapsed.QuadPart = _end.QuadPart - _start.QuadPart;
+
+        LARGE_INTEGER elapsed;
+		elapsed.QuadPart  = _end.QuadPart - _start.QuadPart;
 		elapsed.QuadPart *= 1000; // s: *1, ms: *1000, microseconds: *1000000
 		elapsed.QuadPart /= _freq.QuadPart;
-		return (size_t)elapsed.QuadPart;
+
+        return (size_t)elapsed.QuadPart;
     }
 
 private:
@@ -64,11 +66,10 @@ private:
     }
 
 private:
+    Mode  _show_mode;
     LARGE_INTEGER _freq;
     LARGE_INTEGER _start;
     LARGE_INTEGER _end;
-
-    Mode  _show_mode;
 };
 
 #endif
