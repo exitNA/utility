@@ -38,8 +38,8 @@ void progress_bar_test()
 void benchmark_heap_test()
 {
     printf("\n*** benchmark heap test begin ***\n");
-    size_t size = 1000000;
-    size_t top_n = 13;
+    size_t size  = 100000;
+    size_t top_n = 100000;
     int* parray = new int[size];
     printf("rand max: %d\n", RAND_MAX);
     //std::srand(std::time(0));
@@ -56,12 +56,12 @@ void benchmark_heap_test()
             hp.insert(parray[i]);
         }
         hp.sort();
-        std::cout << hp[0];
-        for (size_t i = 1; i < top_n; ++i)
-        {
-            std::cout << ", " << hp[i];
-        }
-        std::cout << std::endl;
+//        std::cout << hp[0];
+//        for (size_t i = 1; i < top_n; ++i)
+//        {
+//            std::cout << ", " << hp[i];
+//        }
+//        std::cout << std::endl;
 
     }
     
@@ -69,12 +69,12 @@ void benchmark_heap_test()
         // qsort
         TimeRuler t;
         std::sort(parray, parray + size);
-        std::cout << parray[size - 1];
-        for (size_t i = 1; i < top_n; ++i)
-        {
-            std::cout << ", " << parray[size - i - 1];
-        }
-        std::cout << std::endl;
+//        std::cout << parray[size - 1];
+//        for (size_t i = 1; i < top_n; ++i)
+//        {
+//            std::cout << ", " << parray[size - i - 1];
+//        }
+//        std::cout << std::endl;
     }
 
     delete [] parray;
