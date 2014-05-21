@@ -5,6 +5,7 @@ template<typename StrElem = char    // string element type
     , typename SAElem = int>        // suffix array element type
 class SuffixArray
 {
+    class Bucket;
 public:
     SuffixArray();
     ~SuffixArray();
@@ -16,7 +17,7 @@ public:
 private:
     void classify(StrElem const* str, size_t length, bool* types);
     void reduce();
-    void induceL();
+    void induceL(StrElem const* str, size_t length, bool* types, Bucket& bkt);
     void induceS();
     bool isLMSStringEqual(StrElem* s1, StrElem* s2);
 
