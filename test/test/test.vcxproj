@@ -89,6 +89,7 @@
     <ClInclude Include="..\..\log.h" />
     <ClInclude Include="..\..\progress_bar.h" />
     <ClInclude Include="..\..\string_ext.h" />
+    <ClInclude Include="..\..\suffix_array.h" />
     <ClInclude Include="..\..\time_ruler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

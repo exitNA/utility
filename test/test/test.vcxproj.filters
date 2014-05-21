@@ -31,6 +31,9 @@
     <ClInclude Include="..\..\binary_file.h">
       <Filter>include</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\suffix_array.h">
+      <Filter>include</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="include">
