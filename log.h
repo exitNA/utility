@@ -1,7 +1,7 @@
 #ifndef LOG_H
 #define LOG_H
 
-#ifndef _WIN32
+#if !defined(_WIN32) && !defined(_WIN64)
     #error "Logger only works on windows platform"
 #endif
 
@@ -36,21 +36,22 @@
     static char one_log_buf[MAX_ONE_LOG_LENGTH];                            \
     SYSTEMTIME lt;                                                          \
     GetLocalTime(&lt);                                                      \
-    int writen_len = _snprintf(one_log_buf, MAX_ONE_LOG_LENGTH,             \
-        "\n%02d:%02d:%02d:%03d-%s>["#level"] " fmt,                         \
-        lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds,                 \
-        __FUNCTION__,                                                       \
-        __VA_ARGS__);                                                       \
+    int writen_len = _snprintf_s(one_log_buf, MAX_ONE_LOG_LENGTH, _TRUNCATE \
+        , "\n[%s] %02d:%02d:%02d:%03d %s> " fmt                             \
+        , level                                                             \
+        , lt.wHour, lt.wMinute, lt.wSecond, lt.wMilliseconds                \
+        , __FUNCTION__                                                      \
+        , __VA_ARGS__);                                                     \
     printf(color, "%s", one_log_buf); fflush(stdout);                       \
     Logger::instance().write(one_log_buf, writen_len);                      \
 }
 
 
-#define log_cyan(fmt, ...)    _log_print(ConsoleColor::Cyan,   info,    fmt, __VA_ARGS__)
-#define log_white(fmt, ...)   _log_print(ConsoleColor::White,  info,    fmt, __VA_ARGS__)
-#define log_info(fmt, ...)    _log_print(ConsoleColor::Green,  info,    fmt, __VA_ARGS__)
-#define log_warning(fmt, ...) _log_print(ConsoleColor::Yellow, warning, fmt, __VA_ARGS__)
-#define log_error(fmt, ...)   _log_print(ConsoleColor::Red,    error,   fmt, __VA_ARGS__)
+#define log_cyan(fmt, ...)    _log_print(ConsoleColor::Cyan,   " info", fmt, __VA_ARGS__)
+#define log_msg(fmt, ...)     _log_print(ConsoleColor::Gray,   " info", fmt, __VA_ARGS__)
+#define log_info(fmt, ...)    _log_print(ConsoleColor::Green,  " info", fmt, __VA_ARGS__)
+#define log_warning(fmt, ...) _log_print(ConsoleColor::Yellow, " warn", fmt, __VA_ARGS__)
+#define log_error(fmt, ...)   _log_print(ConsoleColor::Red,    "error", fmt, __VA_ARGS__)
 
 
 class Logger
@@ -84,7 +85,7 @@ public:
     {
         va_list args;
         va_start(args, fmt);
-        int writen_len = _snprintf(_line_buf, MAX_ONE_LOG_LENGTH, fmt, args);
+        int writen_len = _snprintf_s(_line_buf, MAX_ONE_LOG_LENGTH, _TRUNCATE, fmt, args);
         va_end(args);
         write(_line_buf, writen_len);
     }
@@ -114,29 +115,36 @@ private:
     void create_file()
     {
         // log file root directory
-        size_t path_len = GetCurrentDirectoryA(0, NULL);
-        std::string dir(path_len, '*');
-        GetCurrentDirectoryA(path_len, &dir[0]);
-        dir[path_len - 1] = '\\';
-        dir += LOG_ROOT_DIRECTORY;
+//        size_t path_len = GetCurrentDirectoryA(0, NULL); // get direcotory name length
+//        std::string dir(path_len, '*');
+//        GetCurrentDirectoryA(path_len, &dir[0]);
+//        dir[path_len - 1] = '\\';
+//        dir += LOG_ROOT_DIRECTORY;
+        char dir[MAX_PATH + 1] = {0};
+        GetModuleFileNameA(NULL, dir, MAX_PATH);
+        char* pExeName = strrchr(dir, '\\'); pExeName++;
+        char* pEnd = strrchr(pExeName, '.'); *pEnd = 0;
+
+        // get current runing directory
+        std::string logPath(dir, pExeName);
+        logPath += LOG_ROOT_DIRECTORY;
 
         // get current local time
         SYSTEMTIME lt;
         GetLocalTime(&lt);
 
-        char path_name[MAX_PATH];   // path buffer
-
+        char pathName[MAX_PATH];   // path buffer
         // sub log directory name
-        _snprintf(path_name, MAX_PATH - 1, "%04d-%02d-%02d\\", lt.wYear, lt.wMonth, lt.wDay);
-        dir += path_name;
-        os::mkdirs(dir.c_str());
+        _snprintf_s(pathName, MAX_PATH, _TRUNCATE, "%04d-%02d-%02d\\", lt.wYear, lt.wMonth, lt.wDay);
+        logPath += pathName;
+        os::mkdirs(logPath.c_str());
 
         // log file name
-        _snprintf(path_name, MAX_PATH - 1, "log-%02d-%02d-%02d.txt", lt.wHour, lt.wMinute, lt.wSecond);
-        dir += path_name;
+        _snprintf_s(pathName, MAX_PATH, _TRUNCATE, "%s.log", pExeName);
+        logPath += pathName;
 
-        _pfile = fopen(dir.c_str(), "wb");
-        if (_pfile == NULL)
+        errno_t err = fopen_s(&_pfile, logPath.c_str(), "a");
+        if (err != 0)
         {
             throw std::runtime_error("fail to open log file.");
         }
