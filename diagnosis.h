@@ -3,9 +3,11 @@
 
 #include <vector>
 #include <string>
+
+
 class Diagnosis {
 public:
-    static size_t whoUseMe(std::vector<std::string>& appList, std::string const& filePath);
+    static size_t whoUseMe(std::vector<std::string>& appList, std::string const& oneFilePath);
 
 };
 #endif

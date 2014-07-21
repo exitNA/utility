@@ -2,7 +2,6 @@
 
 #include <windows.h>
 #include <RestartManager.h>
-//#include <stdlib.h>
 #include <iostream>
 
 static void getProcName(std::vector<std::string> &appList, const UINT nProcInfo, RM_PROCESS_INFO const* pRgpi) {
@@ -27,7 +26,7 @@ static void getProcName(std::vector<std::string> &appList, const UINT nProcInfo,
 }
 
 
-size_t Diagnosis::whoUseMe(std::vector<std::string>& appList, std::string const& filePath) {
+size_t Diagnosis::whoUseMe(std::vector<std::string>& appList, std::string const& oneFilePath) {
     DWORD dwSession = 0;
     WCHAR szSessionKey[CCH_RM_SESSION_KEY + 1] = { 0 };
 
@@ -44,13 +43,9 @@ size_t Diagnosis::whoUseMe(std::vector<std::string>& appList, std::string const&
         if (dwError != ERROR_SUCCESS) {
             throw std::runtime_error("fail to start restart manager.");
         }
-
-        size_t converted;
-        pwcs = new wchar_t[filePath.size() + 1];
-        errno_t err = mbstowcs_s(&converted, pwcs, filePath.size() + 1, filePath.c_str(), filePath.size());
-        if (err != 0 || converted != filePath.size() + 1) {
-            throw std::runtime_error("fail to convert char* to wchar_t*.");
-        }
+        // convert char string to wchar string
+        pwcs = new wchar_t[oneFilePath.size() + 1]();
+        MultiByteToWideChar(CP_ACP, 0, oneFilePath.c_str(), oneFilePath.size(), pwcs, oneFilePath.size() + 1);
 
         LPCWSTR supervisedFiles[] = {pwcs};
         dwError = RmRegisterResources(dwSession, 1, supervisedFiles, 0, NULL, 0, NULL);
