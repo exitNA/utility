@@ -34,7 +34,7 @@ public:
         QueryPerformanceCounter(&_start);
     }
     
-    inline size_t elapsed_ms()
+    inline long long elapsed_ms()
     {
         QueryPerformanceCounter(&_end);
 
@@ -43,13 +43,13 @@ public:
         elapsed.QuadPart *= 1000; // s: *1, ms: *1000, microseconds: *1000000
         elapsed.QuadPart /= _freq.QuadPart;
 
-        return (size_t)elapsed.QuadPart;
+        return elapsed.QuadPart;
     }
 
 private:
     inline void _show(char const * const log)
     {
-        size_t elapsed = elapsed_ms();
+        long long elapsed = elapsed_ms();
         if (elapsed >= 1000 * 60)
         {
             elapsed /= 1000;
