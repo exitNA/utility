@@ -1,7 +1,9 @@
 #ifndef TIME_RULER_H_
 #define TIME_RULER_H_
 
+#include <stdio.h>
 #include <windows.h>
+
 
 class TimeRuler
 {
@@ -33,7 +35,7 @@ public:
     {
         QueryPerformanceCounter(&_start);
     }
-    
+
     inline long long elapsed_ms()
     {
         QueryPerformanceCounter(&_end);
