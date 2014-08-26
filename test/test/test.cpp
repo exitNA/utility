@@ -7,6 +7,7 @@
 #include "heap.h"
 #include "time_ruler.h"
 #include "binary_file.h"
+#include "log.h"
 
 #ifdef _WIN32
     #include <windows.h>
@@ -106,16 +107,23 @@ void time_ruler_test()
 
 int main(int argc, char* argv[])
 {
-    benchmark_heap_test();
-    progress_bar_test();
-    buffer_writer_test();
+    //benchmark_heap_test();
+    //progress_bar_test();
+    //buffer_writer_test();
 //    time_ruler_test();
-    size_t elapsed = 1 * 60 * 1000;
-    if (elapsed >= 1000 * 60)
-    {
-        elapsed /= 1000;
-        printf("%s = %d min + %d s\n", "test", elapsed / 60, elapsed % 60);
+    //size_t elapsed = 1 * 60 * 1000;
+    //if (elapsed >= 1000 * 60)
+    //{
+    //    elapsed /= 1000;
+    //    printf("%s = %d min + %d s\n", "test", elapsed / 60, elapsed % 60);
+    //}
+    for (int i = 0; i < 5; ++i) {
+        log_cyan("day %d", i);
+        log_error("day %d", i);
+        log_info("day %d", i);
+        log_warning("day %d", i);
+        log_msg("day %d", i);
     }
-
+    printf("%s helo %d", __FUNCTION__, 3);
     return 0;
 }

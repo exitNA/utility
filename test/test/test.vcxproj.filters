@@ -2,7 +2,6 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="test.cpp" />
-    <ClCompile Include="..\..\test_suffix_array.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\color_print.h">
@@ -30,9 +29,6 @@
       <Filter>include</Filter>
     </ClInclude>
     <ClInclude Include="..\..\binary_file.h">
-      <Filter>include</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\suffix_array.h">
       <Filter>include</Filter>
     </ClInclude>
   </ItemGroup>

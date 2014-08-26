@@ -78,7 +78,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\test_suffix_array.cpp" />
     <ClCompile Include="test.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -90,7 +89,6 @@
     <ClInclude Include="..\..\log.h" />
     <ClInclude Include="..\..\progress_bar.h" />
     <ClInclude Include="..\..\string_ext.h" />
-    <ClInclude Include="..\..\suffix_array.h" />
     <ClInclude Include="..\..\time_ruler.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
