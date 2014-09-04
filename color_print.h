@@ -1,6 +1,10 @@
 #ifndef COLOR_PRINTF_H_
 #define COLOR_PRINTF_H_
 
+#if !defined(_WIN32) && !defined(_WIN64)
+    #error "Logger only works on windows platform"
+#endif
+
 #include <stdarg.h>
 #include <Windows.h>
 

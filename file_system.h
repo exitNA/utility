@@ -121,6 +121,13 @@ namespace os
         in.seekg(0).read(&buf[0], src_size);
         buf[(size_t)src_size] = '\0';
     }
+
+    inline bool file_exist(char const* filename) {
+        FILE* pf = NULL;
+        errno_t err = fopen_s(&pf, filename, "r");
+        if (pf != NULL) fclose(pf);
+        return err == 0;
+    }
 };
 
 #endif
